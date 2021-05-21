@@ -38,6 +38,6 @@ $awin->generate(YOUR_PUBLISHER_ID, ADVERTISER_ID,'https://www.shop.de/search/?sS
 
 this generates:
 
-```bash
+```
 https://www.awin1.com/cread.php?awinmid=123456&awinaffid=123456&pref1=custom+page+ref&clickref=custom+click+ref&viewref1=custom+view+ref&ued=https%3A%2F%2Fwww.shop.de%2Fsearch%2F%3FsSearch%3Dfootball
 ```
