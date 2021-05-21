@@ -3,7 +3,7 @@ Create dynamic affiliate deeplink urls from different networks.
 
 Requirements
 ------------
-- PHP >=7.2.0 || 8.0.1
+- PHP >=7.4
 
 Supported Affiliate Networks
 ------------
