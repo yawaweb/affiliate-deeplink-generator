@@ -1,4 +1,5 @@
 <?php
+
 namespace yawaweb\AffiliateDeeplinkGenerator\Networks;
 
 class Digistore24
