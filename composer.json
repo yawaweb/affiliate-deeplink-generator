@@ -2,22 +2,26 @@
     "name": "yawaweb/affiliate-deeplink-generator",
     "type": "library",
     "description": "Generate deeplinks from different affiliate networks.",
-    "keywords": ["affiliate", "url", "link generator"],
+    "keywords": [
+        "affiliate",
+        "url",
+        "link generator"
+    ],
     "homepage": "https://github.com/yawaweb/affiliate-deeplink-generator",
     "license": "MIT",
     "authors": [
-		{
-		  "name":     "Ousama Yamine",
-		  "email":    "hello@yawaweb.com",
-		  "homepage": "https://yawaweb.com"
-		}
+        {
+            "name": "Ousama Yamine",
+            "email": "hello@yawaweb.com",
+            "homepage": "https://yawaweb.com"
+        }
     ],
     "require": {
-      "php": ">=7.4"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
             "yawaweb\\AffiliateDeeplinkGenerator\\": "src"
         }
-    },
+    }
 }
