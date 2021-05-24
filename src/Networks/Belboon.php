@@ -6,7 +6,7 @@
  * @author    Ousama Yamine <hello@yawaweb.com>
  * @copyright 2016-2021 Yawaweb <hello@yawaweb.com>
  * @license   http://opensource.org/licenses/MIT MIT Public
- * @version   1.0.0
+ * @version   1.0.1
  * @link      https://yawaweb.com
  *
  */
@@ -34,11 +34,8 @@ class Belboon
      */
     public function generate($publisherId, $advertiseId, $adspaceId, $creativesId, $deeplink, $clickRef = null)
     {
-        $url_params_array = [
-            'amc' => 'con.blbn.'.$publisherId.'.'.$adspaceId.'.'.$creativesId, //ADVERTISER_ID
-            'rmd' => 3, //PUBLISHER_ID
-            'trg' => urlencode($deeplink), //DEEPLINK
-        ];
+        $url_params_array['amc'] = 'con.blbn.'.$publisherId.'.'.$adspaceId.'.'.$creativesId;
+
 
         /**
          * Click Reference
@@ -55,6 +52,9 @@ class Belboon
                 $url_params_array['smc1'] = $clickRef;
             }
         }
+
+        $url_params_array['rmd'] = 3;
+        $url_params_array['trg'] = $deeplink;
 
         $url_params = http_build_query($url_params_array);
 
