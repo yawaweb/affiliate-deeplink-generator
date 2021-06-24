@@ -6,7 +6,7 @@
  * @author    Ousama Yamine <hello@yawaweb.com>
  * @copyright 2016-2021 Yawaweb <hello@yawaweb.com>
  * @license   http://opensource.org/licenses/MIT MIT Public
- * @version   1.0.1
+ * @version   1.0.2
  * @link      https://yawaweb.com
  *
  */
@@ -15,15 +15,12 @@ namespace yawaweb\AffiliateDeeplinkGenerator\Networks;
 
 class Belboon
 {
-    /**
-     * Affiliate Domain
-     */
-    const AFFILIATE_DOMAIN = 'https://luna.r.lafamo.com/ts/';
 
     /**
      * Generate affiliate url for Belboon
      * Description of url parameter: https://ingenioustechnologies.atlassian.net/wiki/spaces/KB/pages/1440383093/Working+with+deeplinks
      *
+     * @param string $affiliate_domain ex.: https://luna.r.lafamo.com/ts/
      * @param int $publisherId Affiliate ID
      * @param string $advertiseId Externe ID des Advertiser
      * @param int $adspaceId ID der Werbefläche (z.B.: affiliatesite.com)
@@ -32,7 +29,7 @@ class Belboon
      * @param string|array $clickRef Klick Referenz wenn nur eins da ist dann String wenn mehrere dann array (['ref1', 'ref2'])
      * @return string Trackingurl
      */
-    public function generate($publisherId, $advertiseId, $adspaceId, $creativesId, $deeplink, $clickRef = null)
+    public function generate($affiliate_domain, $publisherId, $advertiseId, $adspaceId, $creativesId, $deeplink, $clickRef = null)
     {
         $url_params_array['amc'] = 'con.blbn.'.$publisherId.'.'.$adspaceId.'.'.$creativesId;
 
@@ -58,6 +55,6 @@ class Belboon
 
         $url_params = http_build_query($url_params_array);
 
-        return self::AFFILIATE_DOMAIN.$advertiseId.'/tsc?'.$url_params;
+        return $affiliate_domain.$advertiseId.'/tsc?'.$url_params;
     }
 }
