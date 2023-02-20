@@ -4,9 +4,10 @@
  *
  * @package   affiliate-deeplink-generator
  * @author    Ousama Yamine <hello@yawaweb.com>
- * @copyright 2016-2021 Yawaweb <hello@yawaweb.com>
+ * @copyright 2016-2023 Yawaweb <hello@yawaweb.com>
  * @license   http://opensource.org/licenses/MIT MIT Public
- * @version   1.0.0
+ * @version   2.0.0
+ * @sine      1.0.0
  * @link      https://yawaweb.com
  *
  */
@@ -15,78 +16,83 @@ namespace yawaweb\AffiliateDeeplinkGenerator\Networks;
 
 class Awin
 {
+    public int $publisherId;
+    public int $advertiserId;
+
+    private null|string|array $clickRef = null;
+    private null|string|array $campaignRef = null;
+
     /**
      * Affiliate Domain
      */
-    const AFFILIATE_DOMAIN = 'https://www.awin1.com/cread.php?';
+    public const AFFILIATE_DOMAIN = 'https://www.awin1.com/cread.php?';
+
+    public function __construct(int $publisherId)
+    {
+        $this->publisherId = $publisherId;
+    }
+
+    public function setAdvertiserId(int $value): void
+    {
+        $this->advertiserId = $value;
+    }
+
+    /**
+     * Click Reference (only available for clicks)
+     * Max.: 6
+     */
+    public function setClickRef($value): void
+    {
+        $this->clickRef = $value;
+    }
+
+    /**
+     * Max.: 6
+     */
+    public function setCampaignRef($value): void
+    {
+        $this->campaignRef = $value;
+    }
+
+    private function check($ref, $value): array
+    {
+        $result = [];
+
+        if(is_array($value)) {
+            foreach($value as $key => $row){
+                $keyForRef = ($key == 0) ? '' : $key + 1;
+                $result[$ref . $keyForRef] = $row;
+            }
+
+            return $result;
+        }
+
+        $result[$ref] = $value;
+
+        return $result;
+    }
 
     /**
      * Generate affiliate url for Awin
      * Description of url parameter: https://wiki.awin.com/index.php/Deeplink_Builder
-     *
-     * @param int $publisherId
-     * @param int $advertiserId
-     * @param string $deeplink
-     * @param string $clickRef
-     * @param string $viewRef
-     * @param string $pRef
-     * @return string
      */
-    public function generate($publisherId, $advertiserId, $deeplink, $clickRef = null, $viewRef = null, $pRef = null)
+    public function getByDeeplink($value): string
     {
         $url_params_array = [];
-        $url_params_array['awinmid'] = $advertiserId; //ADVERTISER_ID
-        $url_params_array['awinaffid'] = $publisherId; //PUBLISHER_ID
+        $url_params_array['awinmid'] = $this->advertiserId; //ADVERTISER_ID
+        $url_params_array['awinaffid'] = $this->publisherId; //PUBLISHER_ID
 
-        /**
-         * Publisher Reference (available for clicks and views)
-         * Max.: 6
-         */
-        if($pRef != null){
-            if(is_array($pRef)) {
-                foreach($pRef as $key => $value){
-                    $keyForRef = $key+1;
-                    $url_params_array['pref' . $keyForRef] = $value;
-                }
-            }
-            else{
-                $url_params_array['pref1'] = $pRef;
-            }
+        if($this->clickRef != null){
+            $clickRef = $this->check('clickref', $this->clickRef);
+            $url_params_array = array_merge($url_params_array, $clickRef);
         }
 
-        /**
-         * Click Reference (only available for clicks)
-         * Max.: 6
-         */
-        if($clickRef != null){
-            if(is_array($clickRef)) {
-                foreach($clickRef as $key => $value){
-                    $keyForRef = ($key == 0) ? '' : $key+1;
-                    $url_params_array['clickref' . $keyForRef] = $value;
-                }
-            }
-            else{
-                $url_params_array['clickref'] =$clickRef;
-            }
+        if($this->campaignRef != null){
+            $campaingRef = $this->check('campaign', $this->campaignRef);
+            $url_params_array = array_merge($url_params_array, $campaingRef);
         }
 
-        /**
-         * View Reference (only available for views)
-         * Max.: 6
-         */
-        if($viewRef != null){
-            if(is_array($viewRef)) {
-                foreach($viewRef as $key => $value){
-                    $keyForRef = $key+1;
-                    $url_params_array['viewref' . $keyForRef] = $value;
-                }
-            }
-            else{
-                $url_params_array['viewref1'] = $viewRef;
-            }
-        }
-
-        $url_params_array['ued'] = $deeplink; //DEEPLINK
+        $url_params_array['ued'] = $value; //DEEPLINK
 
         $url_params = http_build_query($url_params_array);
 
