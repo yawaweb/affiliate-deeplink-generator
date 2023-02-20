@@ -1,9 +1,9 @@
-# affiliate-deeplink-generator
+# Affiliate Deeplink Generator 2.0
 Create dynamic affiliate deeplink urls from different networks.
 
 Requirements
 ------------
-- PHP >=7.4
+- PHP >=8.0
 
 Supported Affiliate Networks
 ------------
@@ -13,13 +13,15 @@ Supported Affiliate Networks
 - Belboon
 - Digistore24
 
+You are welcome to make a pull request with more choices.
+
 Installation
 ------------
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
 ```bash
-composer require --prefer-dist yawaweb/affiliate-deeplink-generator "*"
+composer require yawaweb/affiliate-deeplink-generator
 ```
 
 Usage
@@ -32,12 +34,16 @@ For awin :
 ```php
 use yawaweb\AffiliateDeeplinkGenerator\Networks\Awin;
 
-$awin = new Awin();
-$awin->generate(YOUR_PUBLISHER_ID, ADVERTISER_ID,'https://www.shop.de/search/?sSearch=football', 'custom click ref', 'custom view ref', 'custom page ref');
+$awin = new Awin(123456789); //Publisher ID
+$awin->setAdvertiserId(1234); //REQUIRED
+$awin->setCampaignRef('myCampaign'); //OPTIONAL
+$awin->setClickRef('custom click reference'); //OPTIONAL
+
+$awin->getByDeeplink('https://www.example.com/search/?sSearch=football');
 ```
 
 this generates:
 
 ```
-https://www.awin1.com/cread.php?awinmid=123456&awinaffid=123456&pref1=custom+page+ref&clickref=custom+click+ref&viewref1=custom+view+ref&ued=https%3A%2F%2Fwww.shop.de%2Fsearch%2F%3FsSearch%3Dfootball
+https://www.awin1.com/cread.php?awinmid=123&awinaffid=123456789&clickref=custom+click+ref&campaign=myCampaign&ued=https%3A%2F%2Fwww.example.com%2Fsearch%2F%3FsSearch%3Dfootball
 ```
