@@ -4,9 +4,10 @@
  *
  * @package   affiliate-deeplink-generator
  * @author    Ousama Yamine <hello@yawaweb.com>
- * @copyright 2016-2021 Yawaweb <hello@yawaweb.com>
+ * @copyright 2016-2023 Yawaweb <hello@yawaweb.com>
  * @license   http://opensource.org/licenses/MIT MIT Public
- * @version   1.0.0
+ * @version   2.0.0
+ * @since     1.0.0
  * @link      https://yawaweb.com
  *
  */
@@ -15,10 +16,19 @@ namespace yawaweb\AffiliateDeeplinkGenerator\Networks;
 
 class Ebay{
 
+    private int $campaignId;
+    private string $country;
+    private int $channelId = 1;
+    private int $toolId = 10001;
+    private int $eventType = 1;
+    private ?string $clickRef = null;
+
     /**
      * Rotate IDs
+     *
+     * @since 1.0.0
      */
-    const countrys = [
+    public const countrys = [
         'at' => ['rotateId' => '5221-53469-19255-0', 'siteid' => 16, 'tld' => 'at'],
         'au' => ['rotateId' => '705-53470-19255-0', 'siteid' => 15, 'tld' => 'com.au'],
         'be' => ['rotateId' => '1553-53471-19255-0', 'siteid' => 23, 'tld' => 'be'],
@@ -36,28 +46,72 @@ class Ebay{
     ];
 
     /**
+     * @param int $campaignId The unique EPN campaign ID assigned to the eBay partner.
+     * @param string $country country of ebay in ISO 3166 Alpa-2 format (ex.: de for ebay.de)
+     */
+    public function __construct(int $campaignId, string $country)
+    {
+        $this->campaignId = $campaignId;
+        $this->country = $country;
+    }
+
+    /**
+     * The channel ID. Valid values: 1 – EPN, 2 – Paid Search, 3 – Natural Search, 4 – Display, 7 – Site Email, 8 – Marketing Email, 16 – Social Media
+     *
+     * @param int $channelId
+     */
+    public function setChannelId(int $channelId): void
+    {
+        $this->channelId = $channelId;
+    }
+
+    /**
+     * The unique ID assigned to the data source (such as API, link generator, or data feed) that provided the link.
+     *
+     * @param int $toolId
+     */
+    public function setToolId(int $toolId): void
+    {
+        $this->toolId = $toolId;
+    }
+
+    /**
+     * The tracking event type. Valid values: 1 – Click, 2 – Impression, 3 – Viewable Impression
+     *
+     * @param int $eventType
+     */
+    public function setEventType(int $eventType): void
+    {
+        $this->eventType = $eventType;
+    }
+
+    /**
+     * @param string|null $clickRef click reference for your tracking
+     */
+    public function setClickRef(?string $clickRef): void
+    {
+        $this->clickRef = $clickRef;
+    }
+
+    /**
      * Generate affiliate url for ebay
      * Description of url parameter: https://developer.ebay.com/api-docs/buy/static/ref-epn-link.html
      *
-     * @param int $campaignId The unique EPN campaign ID assigned to the eBay partner.
-     * @param string $country country of ebay in ISO 3166 Alpa-2 format (ex.: de for ebay.de)
      * @param string $deeplink your deeplink of ebay
-     * @param string $clickRef click reference for your tracking
-     * @param int $channelId The channel ID. Valid values: 1 – EPN, 2 – Paid Search, 3 – Natural Search, 4 – Display, 7 – Site Email, 8 – Marketing Email, 16 – Social Media
-     * @param int $eventType The tracking event type. Valid values: 1 – Click, 2 – Impression, 3 – Viewable Impression
-     * @param int $toolid The unique ID assigned to the data source (such as API, link generator, or data feed) that provided the link.
      * @return string
+     *@since 2.0.0
+     *
      */
-    public function generate($campaignId, $country, $deeplink, $clickRef = null, $channelId = 1, $eventType = 1, $toolid = 10001)
+    public function getByDeeplink(string $deeplink): string
     {
         $url_params_array = [
-            'mkcid' => $channelId,
-            'mkrid' => self::countrys[$country]['rotateId'],
-            'siteid' => self::countrys[$country]['siteid'],
-            'campid' => $campaignId,
-            'customid' => $clickRef,
-            'toolid' => $toolid,
-            'mkevt' => $eventType
+            'mkcid' => $this->channelId,
+            'mkrid' => self::countrys[$this->country]['rotateId'],
+            'siteid' => self::countrys[$this->country]['siteid'],
+            'campid' => $this->campaignId,
+            'customid' => $this->clickRef,
+            'toolid' => $this->toolId,
+            'mkevt' => $this->eventType
         ];
 
         $url_params = http_build_query($url_params_array);
@@ -73,18 +127,14 @@ class Ebay{
      * Generate affiliate search url for ebay
      * Description of url parameter: https://developer.ebay.com/api-docs/buy/static/ref-epn-link.html
      *
-     * @param int $campaignId The unique EPN campaign ID assigned to the eBay partner.
-     * @param string $country country of ebay in ISO 3166 Alpa-2 format (ex.: de for ebay.de)
      * @param string $keyword keyword for search
-     * @param null $clickRef click reference for your tracking
-     * @param int $channelId The channel ID. Valid values: 1 – EPN, 2 – Paid Search, 3 – Natural Search, 4 – Display, 7 – Site Email, 8 – Marketing Email, 16 – Social Media
-     * @param int $eventType The tracking event type. Valid values: 1 – Click, 2 – Impression, 3 – Viewable Impression
-     * @param int $toolid The unique ID assigned to the data source (such as API, link generator, or data feed) that provided the link.
      * @return string
+     *@since 2.0.0
      */
-    public function search($campaignId, $country, $keyword, $clickRef = null, $channelId = 1, $eventType = 1, $toolid = 10001)
+    public function getByKeyword(string $keyword): string
     {
-        $search = 'https://www.ebay.'.self::countrys[$country]['tld'].'/sch/?_nkw='.str_replace(' ', '+', $keyword);
-        return $this->generate($campaignId, $country, $search, $clickRef, $channelId, $eventType, $toolid);
+        $searchURL = 'https://www.ebay.'.self::countrys[$this->country]['tld'].'/sch/?_nkw='.str_replace(' ', '+', $keyword);
+
+        return $this->getByDeeplink($searchURL);
     }
 }
